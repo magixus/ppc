@@ -65,7 +65,10 @@ class CSP(object):
 		self.c = c
 	
 	def REVISE_pc(self,Xi,Xk,Xj):
-		#temp = self.c.Mp[Xi][Xj] and 
+		# this is revise_pc implementation method
+		#temp = self.c.Mp[Xi][Xj 
+
+
 		pass 
 
 	def PC2() :
