@@ -4,6 +4,15 @@ import numpy as np
 import random 
 import sys
 import re
+def intersection_m(m1, m2):
+	return  m1*m2
+def product_m(m1,m2)
+	k = np.dot(m1,m2)
+	for i in range(len(k[0])) :
+		for j in range(len(k[0])) :
+			if k[i,j] >1 : k[i,j] =1
+	return k 
+
 
 class X(object):
 	"""docstring for X"""
@@ -29,9 +38,9 @@ class C(object):
 			for x in range(n):
 				for y in range(n):
 					if x==y : 
-						self.Mp[x][y] = np.identity(p)
+						self.Mp[x,y] = np.identity(p)
 					else:
-						self.Mp[x][y] = np.ones((p,p))
+						self.Mp[x,y] = np.ones((p,p))
 			
 		else : 
 			"""
@@ -44,13 +53,13 @@ class C(object):
 						for i in range(p):
 
 							# matrix p*p that had random 0.1 in diag
-							self.Mp[x][y][i][i] = random.randint(2) 
+							self.Mp[x,y][i,i] = random.randint(2) 
 
 					elif y > x:
 						rm = np.random.randint(2, size=(p, p))
 						rm_t = np.transpose(rm)
-						self.Mp[x][y] = rm # put a random matrix on mp(x,y)
-						self.Mp[y][x] = rm_t	#put it transpose on mp(y,x)
+						self.Mp[x,y] = rm # put a random matrix on mp(x,y)
+						self.Mp[y,x] = rm_t	#put it transpose on mp(y,x)
 					
 
 		
@@ -58,21 +67,32 @@ class C(object):
 
 class CSP(object):
 	"""docstring for CSP"""
-	def __init__(self,x,d,c):
+	def __init__(self,x,d,cMp):
 		super(CSP, self).__init__()
 		self.x = x
 		self.d = d
-		self.c = c
+		self.MP = cMp
 	
-	def REVISE_pc(self,Xi,Xk,Xj):
-		# this is revise_pc implementation method
-		#temp = self.c.Mp[Xi][Xj 
+	def REVISE_pc(self,i,k,j):
+		# this is revise_pc implementation methodd
+		# temp=Mp[i,j] ^ Mp[i,k]° Mp[k,k] °Mp[k,j]
+		temp = intersection_m(self.Mp[i,j],product_m(self.Mp[i,k],product_m(self.Mp[k,k],self.Mp[k,j])))
 
-
-		pass 
+		if (temp!=self.Mp[i,j]).all() :
+			self.Mp[i,j] = temp
+			return True
+		else : 
+			return False
 
 	def PC2() :
-		pass
+		Q = set() # get all constraint between variables
+		for x in range(n):
+			for y in range(n):
+				if y > x:
+					if (self.Mp[x,y] != np.ones((len(self.Mp[x,y]),len(self.Mp[x,y])), int)):
+						Q.append((x,y))
+					self.Mp[y,x] = rm_t	#put it transpose on mp(y,x)
+	
 
 	def look_ahead() :
 		pass
@@ -87,11 +107,11 @@ if len(sys.argv) > 2:
 
 	print(xi_rang, "    ",di_rang,"  ")
 
-xi = X(xi_rang)
-di = D(di_rang)
+	xi = X(xi_rang)
+	di = D(di_rang)
 
-print(xi.Xi)
-print(di.Di)
-test_mat = C(xi,di)
+	print("random variables  = ",xi.Xi)
+	print("random domains    = ",di.Di)
+	test_mat = C(xi.Xi,di.Di)
 
-print(test_mat.Mp)
+	print(test_mat.Mp)
