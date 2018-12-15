@@ -4,8 +4,10 @@ import numpy as np
 import random 
 import sys
 import re
+
 def intersection_m(m1, m2):
 	return  m1*m2
+
 def product_m(m1,m2)
 	k = np.dot(m1,m2)
 	for i in range(len(k[0])) :
@@ -69,8 +71,8 @@ class CSP(object):
 	"""docstring for CSP"""
 	def __init__(self,x,d,cMp):
 		super(CSP, self).__init__()
-		self.x = x
-		self.d = d
+		self.x = x # number of variables
+		self.d = d # range of domain definition
 		self.MP = cMp
 	
 	def REVISE_pc(self,i,k,j):
@@ -90,9 +92,33 @@ class CSP(object):
 			for y in range(n):
 				if y > x:
 					if (self.Mp[x,y] != np.ones((len(self.Mp[x,y]),len(self.Mp[x,y])), int)):
-						Q.append((x,y))
-					self.Mp[y,x] = rm_t	#put it transpose on mp(y,x)
-	
+						Q.add((x,y))
+		
+		try:
+			while Q: #while Q still has elements on it 
+				pair = Q.pop()
+				i = pair[0] ; j = pair[1]
+				for k in range(len(self.Mp[0])) if not (k==i==j):
+					#green
+					temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
+					if (temp!=self.Mp[i,k]).all() :
+						self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
+						if i <= k: 
+							Q.add((i,k))
+						else:
+							Q.add(k,i)
+					#blue
+					temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
+					if (temp!=self.Mp[k,j]).all() :
+						self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
+						if k <= j: 
+							Q.add((k,j))
+						else:
+							Q.add(j,k)
+			return "success"
+			pass
+		except Exception as e:
+			return "faill"
 
 	def look_ahead() :
 		pass
@@ -112,6 +138,9 @@ if len(sys.argv) > 2:
 
 	print("random variables  = ",xi.Xi)
 	print("random domains    = ",di.Di)
-	test_mat = C(xi.Xi,di.Di)
+	const_mat = C(xi.Xi,di.Di)
 
 	print(test_mat.Mp)
+
+	scp = CSP(xi,di,const_mat.Mp)
+	print(scp.PC2())
