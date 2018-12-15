@@ -21,12 +21,22 @@ class X(object):
 	def __init__(self, rang):
 		super(X, self).__init__()
 		self.Xi = random.randrange(rang[0],rang[1])
+		self.instantiation =[{} for y in range(len(self.Xi))]
+	
+	def isinstanciate():
+		# return false if there is any var not instanciate
+		return not(False in [vs for vs in self.instantiation])	
+
+	def picRandomUninstanciateVar():
+		# sefl.Xi 
+		return random.choice([i for i in range(self.Xi) if self.instanciation[i]])
 
 class D(object):
 	"""docstring for D"""
 	def __init__(self, rang):
 		super(D, self).__init__()
 		self.Di = random.randrange(rang[0],rang[1])
+
 
 class C(object):
 	"""docstring for C"""
@@ -74,8 +84,11 @@ class CSP(object):
 		self.x = x # number of variables
 		self.d = d # range of domain definition
 		self.MP = cMp
-	
-	def REVISE_pc(self,i,k,j):
+		self.domainXi = [set([p for p in range(self.d) ]) * self.x.Xi]
+		#self.domainXi = [{} * self.x]
+		
+
+	"""def REVISE_pc(self,i,k,j):
 		# this is revise_pc implementation methodd
 		# temp=Mp[i,j] ^ Mp[i,k]° Mp[k,k] °Mp[k,j]
 		temp = intersection_m(self.Mp[i,j],product_m(self.Mp[i,k],product_m(self.Mp[k,k],self.Mp[k,j])))
@@ -84,21 +97,21 @@ class CSP(object):
 			self.Mp[i,j] = temp
 			return True
 		else : 
-			return False
+			return False"""
 
 	def PC2() :
 		Q = set() # get all constraint between variables
 		for x in range(n):
 			for y in range(n):
 				if y > x:
-					if (self.Mp[x,y] != np.ones((len(self.Mp[x,y]),len(self.Mp[x,y])), int)):
+					if (self.Mp[x,y] != np.ones((self.d,self.d), int)):
 						Q.add((x,y))
 		
 		try:
 			while Q: #while Q still has elements on it 
 				pair = Q.pop()
 				i = pair[0] ; j = pair[1]
-				for k in range(len(self.Mp[0])) if not (k==i==j):
+				for k in range(self.x) if not (k==i==j):
 					#green
 					temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
 					if (temp!=self.Mp[i,k]).all() :
@@ -120,8 +133,40 @@ class CSP(object):
 		except Exception as e:
 			return "faill"
 
-	def look_ahead() :
-		pass
+	def consistance():
+		for i in range(self.x) :
+			for j in range(self.x) :
+				# if any matrix is empty then false
+				if (np.zeros((self.d,self.d),int)==self.Mp[x,y]).all() :
+					return False
+		return True
+
+	def look_ahead_v1(A={}) : # perform random var's initiation  
+		# (x,d) = (variables, domains)
+		PC2()
+		if not consistance() : return False
+		if isinstanciate() : 
+			return True
+		else :
+			# pic random var to istanciate 
+			xi = picRandomUninstanciateVar()
+
+			for vi in range(self.d):
+				self.x.instantiation[xi].add(vi)
+				self.domainXi[xi] = self.x.instantiation[xi]
+				A.add((xi,vi))
+				if look_ahead_v1(A) : return True
+
+			return False
+
+
+
+
+
+
+
+
+"""
 
 if len(sys.argv) > 2:
 	xi = sys.argv[1]
@@ -143,4 +188,4 @@ if len(sys.argv) > 2:
 	print(test_mat.Mp)
 
 	scp = CSP(xi,di,const_mat.Mp)
-	print(scp.PC2())
+	print(scp.PC2())"""
