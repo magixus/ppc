@@ -8,7 +8,7 @@ import re
 def intersection_m(m1, m2):
 	return  m1*m2
 
-def product_m(m1,m2)
+def product_m(m1,m2):
 	k = np.dot(m1,m2)
 	for i in range(len(k[0])) :
 		for j in range(len(k[0])) :
@@ -21,7 +21,7 @@ class X(object):
 	def __init__(self, rang):
 		super(X, self).__init__()
 		self.Xi = random.randrange(rang[0],rang[1])
-		self.instantiation =[{} for y in range(len(self.Xi))]
+		self.instantiation =[{} for y in range(self.Xi)]
 	
 	def isinstanciate():
 		# return false if there is any var not instanciate
@@ -65,7 +65,7 @@ class C(object):
 						for i in range(p):
 
 							# matrix p*p that had random 0.1 in diag
-							self.Mp[x,y][i,i] = random.randint(2) 
+							self.Mp[x,y][i,i] = np.random.randint(2) 
 
 					elif y > x:
 						rm = np.random.randint(2, size=(p, p))
@@ -84,7 +84,7 @@ class CSP(object):
 		self.x = x # number of variables
 		self.d = d # range of domain definition
 		self.MP = cMp
-		self.domainXi = [set([p for p in range(self.d) ]) * self.x.Xi]
+		self.domainXi = [set([p for p in range(self.d.Di) ]) for y in range(self.x.Xi)]
 		#self.domainXi = [{} * self.x]
 		
 
@@ -99,37 +99,37 @@ class CSP(object):
 		else : 
 			return False"""
 
-	def PC2() :
+	def PC2():
 		Q = set() # get all constraint between variables
-		for x in range(n):
-			for y in range(n):
-				if y > x:
-					if (self.Mp[x,y] != np.ones((self.d,self.d), int)):
-						Q.add((x,y))
-		
+		for i in range(self.x.Xi):
+			for j in range(self.x.Xi):
+				if j > i:
+					if (self.Mp[i,j] != np.ones((self.d.Di,self.d.Di), int)):
+						Q.add((i,j))
+		print(Q)
 		try:
 			while Q: #while Q still has elements on it 
 				pair = Q.pop()
 				i = pair[0] ; j = pair[1]
-				for k in range(self.x) if not (k==i==j):
-					#green
-					temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
-					if (temp!=self.Mp[i,k]).all() :
-						self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
-						if i <= k: 
-							Q.add((i,k))
-						else:
-							Q.add(k,i)
-					#blue
-					temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
-					if (temp!=self.Mp[k,j]).all() :
-						self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
-						if k <= j: 
-							Q.add((k,j))
-						else:
-							Q.add(j,k)
+				for k in range(self.x) :
+					if not (k==i==j) :
+						#green
+						temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
+						if (temp!=self.Mp[i,k]).all() :
+							self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
+							if i <= k: 
+								Q.add((i,k))
+							else:
+								Q.add(k,i)
+						#blue
+						temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
+						if (temp!=self.Mp[k,j]).all() :
+							self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
+							if k <= j: 
+								Q.add((k,j))
+							else:
+								Q.add(j,k)
 			return "success"
-			pass
 		except Exception as e:
 			return "faill"
 
@@ -166,11 +166,12 @@ class CSP(object):
 
 
 
-"""
 
-if len(sys.argv) > 2:
+
+if len(sys.argv) > 3:
 	xi = sys.argv[1]
 	di = sys.argv[2]
+	const = sys.argv[3]
 	p = r"\d+"
 	xi_rang = [int(x) for x in re.findall(p,xi)]
 	di_rang = [int(d) for d in re.findall(p,di)]
@@ -183,9 +184,12 @@ if len(sys.argv) > 2:
 
 	print("random variables  = ",xi.Xi)
 	print("random domains    = ",di.Di)
-	const_mat = C(xi.Xi,di.Di)
 
-	print(test_mat.Mp)
+	if const.startswith("True") :
+		const_mat = C(xi.Xi,di.Di, True)
+	else:
+		const_mat = C(xi.Xi,di.Di)
+	print(const_mat.Mp)
 
-	scp = CSP(xi,di,const_mat.Mp)
-	print(scp.PC2())"""
+	csp = CSP(xi,di,const_mat.Mp)
+	csp.PC2()
