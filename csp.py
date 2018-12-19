@@ -107,17 +107,20 @@ class CSP(object):
 			return True
 		else : 
 			return False"""
-	def changedomain(self, xi,vi):
-		var_pos = self.Mp[xi]
+	def changedomain(self, mat,xi,vi):
+		var_pos = mat[xi]
+		
 		for i in range(len(var_pos)) :
-			self.Mp[xi,i] = self.Mp[xi,i][vi]
+			unchaged = mat[xi,i][vi]
+			mat[xi,i] = np.zeros((self.d.Di,self.d.Di),int)
+			mat[xi,i][vi] = unchaged
 
-	def PC2(self):
+	def PC2(self,mat):
 		Q = set() # get all constraint between variables
 		for i in range(self.x.Xi):
 			for j in range(self.x.Xi):
 				if j > i:
-					if not (self.Mp[i,j] == np.ones((self.d.Di,self.d.Di), int)).all():
+					if not (mat[i,j] == np.ones((self.d.Di,self.d.Di), int)).all():
 						Q.add((i,j))
 
 		#printcolor(Q)
@@ -128,17 +131,17 @@ class CSP(object):
 			for k in range(self.x.Xi) :
 				if not (k==i==j) :
 					#green
-					temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
-					if not (temp ==self.Mp[i,k]).all() :
-						self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
+					temp = intersection_m(mat[i,k],product_m(mat[i,j],product_m(mat[j,j],mat[j,k])))
+					if not (temp ==mat[i,k]).all() :
+						mat[i,k] = temp ; mat[k,i] = np.transpose(temp) 
 						if i <= k: 
 							Q.add((i,k))
 						else:
 							Q.add((k,i))
 					#blue
-					temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
-					if (temp!=self.Mp[k,j]).all() :
-						self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
+					temp = intersection_m(mat[k,j],product_m(mat[k,i],product_m(mat[i,i],mat[i,j])))
+					if (temp!=mat[k,j]).all() :
+						mat[k,j] = temp ; mat[j,k] = np.transpose(temp) 
 						if k <= j: 
 							Q.add((k,j))
 						else:
@@ -156,12 +159,12 @@ class CSP(object):
 					return False
 		return True
 
-	def look_ahead_v1(self) : # perform random var's initiation  
+	def look_ahead_v1(self, m) : # perform random var's initiation  
 		# (x,d) = (variables, domains)
-		self.PC2()
-		if not self.consistance() : print("bonsoir"); return False
+		self.PC2(m)
+		if not self.consistance() : print("inconsistant"); return False
 		if self.x.isinstanciate() : 
-			print("bonjour")
+			print("tout est instantié")
 			return True
 		else :
 			# pic random var to istanciate 
@@ -173,9 +176,11 @@ class CSP(object):
 				self.x.instantiation[xi].add(vi)
 				
 				#changement de domaine
-				self.Mp[xi] 
-				if self.look_ahead_v1() : return True
-			return False
+				self.changedomain(m,xi,vi)
+				if self.look_ahead_v1(m) : return True 
+				else :
+					
+					return False
 
 
 
@@ -212,6 +217,6 @@ if len(sys.argv) > 3:
 	print(fg.red + str(const_mat.Mp)+ fg.rs)
 
 	csp = CSP(xi,di,const_mat.Mp)
-	print(csp.look_ahead_v1())
+	print(csp.look_ahead_v1(const_mat.Mp))
 	print(csp.x.instantiation)
 	#printmatrix(const_mat.Mp)
