@@ -4,6 +4,8 @@ import numpy as np
 import random 
 import sys
 import re
+from sty import fg, bg, ef, rs, Rule
+
 
 def intersection_m(m1, m2):
 	return  m1*m2
@@ -15,21 +17,30 @@ def product_m(m1,m2):
 			if k[i,j] >1 : k[i,j] =1
 	return k 
 
+def printcolor(ob):
+	print(bg(np.random.randint(255)) + str(ob) + bg.rs)
+
+
+def printmatrix(m):
+	printcolor(m)
+
+
+
 
 class X(object):
 	"""docstring for X"""
 	def __init__(self, rang):
 		super(X, self).__init__()
 		self.Xi = random.randrange(rang[0],rang[1])
-		self.instantiation =[{} for y in range(self.Xi)]
+		self.instantiation =[set() for y in range(self.Xi)]
 	
-	def isinstanciate():
+	def isinstanciate(self):
 		# return false if there is any var not instanciate
-		return not(False in [vs for vs in self.instantiation])	
+		return not(False in [True if(vs) else False for vs in self.instantiation])	
 
-	def picRandomUninstanciateVar():
+	def picRandomUninstanciateVar(self):
 		# sefl.Xi 
-		return random.choice([i for i in range(self.Xi) if self.instanciation[i]])
+		return random.choice([i for i in range(self.Xi) if not self.instantiation[i]])
 
 class D(object):
 	"""docstring for D"""
@@ -74,8 +85,6 @@ class C(object):
 						self.Mp[y,x] = rm_t	#put it transpose on mp(y,x)
 					
 
-		
-
 
 class CSP(object):
 	"""docstring for CSP"""
@@ -98,65 +107,74 @@ class CSP(object):
 			return True
 		else : 
 			return False"""
+	def changedomain(self, xi,vi):
+		var_pos = self.Mp[xi]
+		for i in range(len(var_pos)) :
+			self.Mp[xi,i] = self.Mp[xi,i][vi]
 
 	def PC2(self):
 		Q = set() # get all constraint between variables
 		for i in range(self.x.Xi):
 			for j in range(self.x.Xi):
 				if j > i:
-					if (self.Mp[i,j] != np.ones((self.d.Di,self.d.Di), int)).all():
+					if not (self.Mp[i,j] == np.ones((self.d.Di,self.d.Di), int)).all():
 						Q.add((i,j))
-		print(Q)
-		try:
-			while Q: #while Q still has elements on it 
-				pair = Q.pop()
-				i = pair[0] ; j = pair[1]
-				for k in range(self.x) :
-					if not (k==i==j) :
-						#green
-						temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
-						if (temp!=self.Mp[i,k]).all() :
-							self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
-							if i <= k: 
-								Q.add((i,k))
-							else:
-								Q.add(k,i)
-						#blue
-						temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
-						if (temp!=self.Mp[k,j]).all() :
-							self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
-							if k <= j: 
-								Q.add((k,j))
-							else:
-								Q.add(j,k)
-			return "success"
-		except Exception as e:
-			return "faill"
+
+		#printcolor(Q)
+	##try:
+		while Q: #while Q still has elements on it 
+			pair = Q.pop()
+			i = pair[0] ; j = pair[1]
+			for k in range(self.x.Xi) :
+				if not (k==i==j) :
+					#green
+					temp = intersection_m(self.Mp[i,k],product_m(self.Mp[i,j],product_m(self.Mp[j,j],self.Mp[j,k])))
+					if not (temp ==self.Mp[i,k]).all() :
+						self.Mp[i,k] = temp ; self.Mp[k,i] = np.transpose(temp) 
+						if i <= k: 
+							Q.add((i,k))
+						else:
+							Q.add((k,i))
+					#blue
+					temp = intersection_m(self.Mp[k,j],product_m(self.Mp[k,i],product_m(self.Mp[i,i],self.Mp[i,j])))
+					if (temp!=self.Mp[k,j]).all() :
+						self.Mp[k,j] = temp ; self.Mp[j,k] = np.transpose(temp) 
+						if k <= j: 
+							Q.add((k,j))
+						else:
+							Q.add((j,k))
+		return "success"
+	##except Exception as e:
+	##	return "faill"
+
 
 	def consistance(self):
-		for i in range(self.x) :
-			for j in range(self.x) :
+		for i in range(self.x.Xi) :
+			for j in range(self.x.Xi) :
 				# if any matrix is empty then false
-				if (np.zeros((self.d,self.d),int)==self.Mp[x,y]).all() :
+				if (np.zeros((self.d.Di,self.d.Di),int)==self.Mp[i,j]).all() :
 					return False
 		return True
 
-	def look_ahead_v1(self, A={}) : # perform random var's initiation  
+	def look_ahead_v1(self) : # perform random var's initiation  
 		# (x,d) = (variables, domains)
-		PC2()
-		if not consistance() : return False
-		if isinstanciate() : 
+		self.PC2()
+		if not self.consistance() : print("bonsoir"); return False
+		if self.x.isinstanciate() : 
+			print("bonjour")
 			return True
 		else :
 			# pic random var to istanciate 
-			xi = picRandomUninstanciateVar()
+			xi = self.x.picRandomUninstanciateVar()
 
-			for vi in range(self.d):
+
+			for vi in range(self.d.Di):
+				print(xi,"--",vi)
 				self.x.instantiation[xi].add(vi)
-				self.domainXi[xi] = self.x.instantiation[xi]
-				A.add((xi,vi))
-				if look_ahead_v1(A) : return True
-
+				
+				#changement de domaine
+				self.Mp[xi] 
+				if self.look_ahead_v1() : return True
 			return False
 
 
@@ -189,7 +207,11 @@ if len(sys.argv) > 3:
 		const_mat = C(xi.Xi,di.Di, True)
 	else:
 		const_mat = C(xi.Xi,di.Di)
-	print(const_mat.Mp)
+	#print(const_mat.Mp)
+
+	print(fg.red + str(const_mat.Mp)+ fg.rs)
 
 	csp = CSP(xi,di,const_mat.Mp)
-	csp.PC2()
+	print(csp.look_ahead_v1())
+	print(csp.x.instantiation)
+	#printmatrix(const_mat.Mp)
