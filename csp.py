@@ -83,7 +83,7 @@ class CSP(object):
 		super(CSP, self).__init__()
 		self.x = x # number of variables
 		self.d = d # range of domain definition
-		self.MP = cMp
+		self.Mp = cMp
 		self.domainXi = [set([p for p in range(self.d.Di) ]) for y in range(self.x.Xi)]
 		#self.domainXi = [{} * self.x]
 		
@@ -99,12 +99,12 @@ class CSP(object):
 		else : 
 			return False"""
 
-	def PC2():
+	def PC2(self):
 		Q = set() # get all constraint between variables
 		for i in range(self.x.Xi):
 			for j in range(self.x.Xi):
 				if j > i:
-					if (self.Mp[i,j] != np.ones((self.d.Di,self.d.Di), int)):
+					if (self.Mp[i,j] != np.ones((self.d.Di,self.d.Di), int)).all():
 						Q.add((i,j))
 		print(Q)
 		try:
@@ -133,7 +133,7 @@ class CSP(object):
 		except Exception as e:
 			return "faill"
 
-	def consistance():
+	def consistance(self):
 		for i in range(self.x) :
 			for j in range(self.x) :
 				# if any matrix is empty then false
@@ -141,7 +141,7 @@ class CSP(object):
 					return False
 		return True
 
-	def look_ahead_v1(A={}) : # perform random var's initiation  
+	def look_ahead_v1(self, A={}) : # perform random var's initiation  
 		# (x,d) = (variables, domains)
 		PC2()
 		if not consistance() : return False
