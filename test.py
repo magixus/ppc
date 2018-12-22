@@ -2,7 +2,7 @@ import numpy as np
 import sys
 
 
-
+from contrainte import C
 # test matrix creation 
 """
 def matrix1 (n,p):
@@ -30,3 +30,19 @@ if len(sys.argv) > 2:
 else :
 	print("hey what are you doing ?? !! stop being an idot")
 """
+a = C(5,10,random=True)
+b = C(5,10,random=True)
+c = C(10,5, random=True)
+
+j = np.ones((10,15),int)
+
+"""
+k = C(a & b)
+print (a & b)
+print(a&j)
+
+
+print("\n",a*c)
+
+print (type(k))"""
+print (a & b)

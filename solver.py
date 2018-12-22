@@ -1,4 +1,5 @@
-import sys,re
+import sys
+import re
 import random
 import numpy as np
 from csp import CSP
@@ -10,35 +11,30 @@ from variable import X
 import basicFunctions as BF
 
 
-if len(sys.argv) > 4:
-	xi = sys.argv[1]
-	di = sys.argv[2]
-	nombre_contraint = sys.argv[3]
-	const = sys.argv[3]
+if len(sys.argv) > 3:
+
 	p = r"\d+"
-	xi_rang = [int(x) for x in re.findall(p,xi)]
-	di_rang = [int(d) for d in re.findall(p,di)]
+	xi = list([int(x) for x in re.findall(p,sys.argv[1])])
+	di = list([int(d) for d in re.findall(p,sys.argv[2])])
+	ci = list([int(c) for c in re.findall(p,sys.argv[3])])
 
+	X_rang = random.randrange(xi[0],xi[1])
+	D_rang = random.randrange(di[0],di[1])
+	C_rang = random.randrange(ci[0],ci[1])
 
-	print(xi_rang, "    ",di_rang,"  ")
+	print("random variables  = ",X_rang)
+	print("random domains    =  [ 0 .. ",D_rang,"]")
 
-	xi = X(xi_rang)
-	di = D(di_rang)
+	csp = CSP(X_rang,D_rang,C_rang)
+	Q = csp.getQ(C_rang)
+	print(Q)
+	Mp = csp.Mp
+	#BF.printcolor(Mp)
 
-	print("random variables  = ",xi.Xi)
-	print("random domains    = ",di.Di)
-
-	if const.startswith("True") :
-		const_mat = C(xi.Xi,di.Di, True)
-	else:
-		const_mat = C(xi.Xi,di.Di)
-
-	Q = const_mat.getq(const_mat.Mp,xi.Xi,di.Di)
-
-	csp = CSP(xi,di,const_mat.Mp)
-
-	print(csp.look_ahead_v2(const_mat.Mp,Q))
+	print(csp.look_ahead_v2(Mp,Q))
 
 
 	print(csp.x.instanciation)
-	BF.printmatrix(csp.Mp)
+
+else :
+	print("\n\tusage : python solver.py [Var range] [dom range] [con range]\n\n")

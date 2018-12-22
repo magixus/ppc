@@ -1,12 +1,12 @@
+from numpy.random import randint
 import random
-
 class X(object):
 	"""docstring for X"""
-	def __init__(self, rang):
+	def __init__(self, x):
 		super(X, self).__init__()
-		self.Xi = random.randrange(rang[0],rang[1])
+		self.Xi = x
 		#self.Xi = rang
-		self.instanciation =[set() for y in range(self.Xi)]
+		self.instanciation =[set() for y in range(x)]
 	
 	def isinstanciate(self):
 		# return false if there is any var not instanciate
@@ -15,6 +15,18 @@ class X(object):
 	def picRandomUninstanciateVar(self):
 		# sefl.Xi 
 		return random.choice([i for i in range(self.Xi) if not self.instanciation[i]])
+
+	def generateConstraints(self,C_number):
+		constraints = set()
+		while (len(constraints) <= C_number):
+			xi = randint(0,self.Xi + 1)
+			try :
+				xj = random.randrange(xi+1, self.Xi)
+				if (xi,xj) not in constraints : constraints.add((xi,xj))
+			except ValueError:
+				pass
+
+		return constraints
 
 	def setX(self,xi):
 		self.Xi = xi

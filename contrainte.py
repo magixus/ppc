@@ -5,26 +5,44 @@ class C(object):
 	"""def __init__(self,mp):
 		self.mp = mp"""
 	def __init__(self, *args, **kwargs):
-		
-		if eval(kwargs.get('random')) :
-			self.contrainte_xi_xj = np.random.randint(2,size=(args[0],args[1]))
+		if (kwargs.get('random')) :
+			self.constraint_xi_xj = np.random.randint(2,size=(args[0],args[1]))
 
-		else eval(kwargs.get('universal'):
-			self.contrainte_xi_xj = np.ones((args[0],args[1]))
+		elif kwargs.get('universal'):
+			self.constraint_xi_xj = np.ones((args[0],args[1]))
+		else :
+			self.constraint_xi_xj = args[0]
 
+		def setconstraint(self,contraint):
+			self.constraint_xi_xj = contraint
 
-
-	def setconstraint(self,contraint):
-		self.contrainte_xi_xj = contraint
-
-	def __mul__(self,constraint):
-		len_mat = len(self.contrainte_xi_xj)
-		res = np.zeros((len_mat,len_mat),int)
-		for i in range(len_mat) :
-			for j in range(len_mat) :
-
-				if k[i,j] > 1 : res[i,j] = 1
-		return res
-
+	def __mul__(self, other):
+		len_mat = len(self.constraint_xi_xj)
+		res = np.dot(self.constraint_xi_xj, other.constraint_xi_xj)
+		print(res.shape)
+		for i in range(res.shape[0]) :
+			for j in range(res.shape[1]) :
+				if res[i,j] > 1 : res[i,j] = 1
+		return C(res)
 
 
+	def transpose(self):
+		p = len(self.constraint_xi_xj)
+		if p == 1:
+			self.constraint_xi_xj.reshape(p,1)
+		else :
+			return np.transpose(self.constraint_xi_xj)
+
+	def __and__(self, other):
+		return self.constraint_xi_xj &  other.constraint_xi_xj
+
+	"""def __rand__(self, other):
+		return other & self.constraint_xi_xj"""
+
+	def __eq__(self, other):
+		n = self.constraint_xi_xj.shape
+		for i in range(n[0]):
+			for j in range(n[1]):
+				if self.constraint_xi_xj[i,j] != other.constraint_xi_xj[i,j]:
+					return False
+		return True
