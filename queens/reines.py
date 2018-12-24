@@ -7,12 +7,11 @@ import random, sys, re
 class reines(object):
 	"""docstring for reines"""
 	def __init__(self, number):
-		super(reines, self).__init__()
-		self.number = number
+		self.mp = self.generateNQueenProblem(number)
 
 
-	def constraint(self):
-		p = self.number
+	def constraint(self,number):
+		p = number
 		Mp = np.ones((p,p,p,p),int)
 		for x in range(p):
 			for y in range(p):
@@ -33,14 +32,17 @@ class reines(object):
 
 		return Mp
 
-	def generateNQueenProblem(self):
-		n = self.number
-		matrix = self.constraint()
+	def generateNQueenProblem(self,number):
+		matrix = self.constraint(number)
 		return matrix
-		for i in range(n):
-			for j in range(n):
-				print("Mp[",i,',',j,"]")
-				print (matrix[i,j])
+
+	def getq(self, number):
+		Q = set()  # get all constraint between variables
+		for i in range(number):
+			for j in range(number):
+				if j > i:
+					if not (self.mp[i, j] == np.ones((number, number), int)).all():
+						Q.add((i, j))
+		return Q
 
 
-#generateNQueenProblem(int(sys.argv[1]))

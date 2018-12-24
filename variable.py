@@ -8,7 +8,7 @@ class X(object):
 		#self.Xi = rang
 		self.instanciation =[set() for y in range(x)]
 	
-	def isinstanciate(self):
+	def is_instanciate(self):
 		# return false if there is any var not instanciate
 		return not(False in [True if(vs) else False for vs in self.instanciation])	
 
@@ -25,7 +25,6 @@ class X(object):
 				if (xi,xj) not in constraints : constraints.add((xi,xj))
 			except ValueError:
 				pass
-
 		return constraints
 
 	def setX(self,xi):

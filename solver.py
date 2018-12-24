@@ -4,7 +4,7 @@ import random
 import numpy as np
 from csp import CSP
 
-from queens import reines as queen 
+from queens.reines import reines as queen
 from contrainte import C 
 from domaine import D
 from variable import X 
@@ -29,12 +29,28 @@ if len(sys.argv) > 3:
 	Q = csp.getQ(C_rang)
 	print(Q)
 	Mp = csp.Mp
+	print(Mp)
 	#BF.printcolor(Mp)
+	dom = csp.d.Di
+	print(csp.look_ahead(dom,Mp,Q))
+	print(csp.x.instanciation)
 
-	print(csp.look_ahead_v2(Mp,Q))
 
 
+elif len(sys.argv) == 2:
+	queenNubmer = int(sys.argv[1])
+	Queen = queen(queenNubmer)
+	#BF.printt(Queen.mp)
+	csp = CSP(queenNubmer,queenNubmer,Queen.mp)
+	dom = csp.d
+	mp = csp.Mp
+	BF.printt(mp)
+
+	Q = Queen.getq(queenNubmer)
+	print(sorted(Q))
+	print(csp.look_ahead(dom,mp, Q))
 	print(csp.x.instanciation)
 
 else :
 	print("\n\tusage : python solver.py [Var range] [dom range] [con range]\n\n")
+	print("\n\tOR  usage : python solver.py numberQueen\n\n")

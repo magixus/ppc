@@ -16,15 +16,9 @@ class C(object):
 		def setconstraint(self,contraint):
 			self.constraint_xi_xj = contraint
 
-	def __mul__(self, other):
-		len_mat = len(self.constraint_xi_xj)
-		res = np.dot(self.constraint_xi_xj, other.constraint_xi_xj)
-		print(res.shape)
-		for i in range(res.shape[0]) :
-			for j in range(res.shape[1]) :
-				if res[i,j] > 1 : res[i,j] = 1
-		return C(res)
-
+	def is_empty(self):
+		if np.sum(self.constraint_xi_xj) == 0 : return True
+		else : return  False
 
 	def transpose(self):
 		p = len(self.constraint_xi_xj)
@@ -46,3 +40,11 @@ class C(object):
 				if self.constraint_xi_xj[i,j] != other.constraint_xi_xj[i,j]:
 					return False
 		return True
+
+	def __mul__(self, other):
+		len_mat = len(self.constraint_xi_xj)
+		res = np.dot(self.constraint_xi_xj, other.constraint_xi_xj)
+		for i in range(res.shape[0]) :
+			for j in range(res.shape[1]) :
+				if res[i,j] > 1 : res[i,j] = 1
+		return C(res)
