@@ -32,7 +32,7 @@ if len(sys.argv) > 3:
 	print(Mp)
 	#BF.printcolor(Mp)
 	dom = csp.d.Di
-	print(csp.look_ahead(dom,Mp,Q))
+	print(csp.look_ahead(Mp))
 	print(csp.x.instanciation)
 
 
@@ -41,16 +41,16 @@ elif len(sys.argv) == 2:
 	queenNubmer = int(sys.argv[1])
 	Queen = queen(queenNubmer)
 	#BF.printt(Queen.mp)
-	csp = CSP(queenNubmer,queenNubmer,Queen.mp)
-	dom = csp.d
-	mp = csp.Mp
-	BF.printt(mp)
-
 	Q = Queen.getq(queenNubmer)
+	csp = CSP(queenNubmer,queenNubmer,Queen.mp,Q)
+	mp = csp.Mp
+	#BF.printt(mp)
+
 	print(sorted(Q))
-	print(csp.look_ahead(dom,mp, Q))
-	print(csp.x.instanciation)
+
+	print(csp.look_ahead(mp))
+	#print(csp.x.instanciation)
 
 else :
-	print("\n\tusage : python solver.py [Var range] [dom range] [con range]\n\n")
-	print("\n\tOR  usage : python solver.py numberQueen\n\n")
+	print("\n\tusage \t: python solver.py [Var range] [dom range] [con range]\n")
+	print("\n\tOR  \t: python solver.py numberQueen\n\n")

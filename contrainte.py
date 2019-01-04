@@ -42,7 +42,6 @@ class C(object):
 		return True
 
 	def __mul__(self, other):
-		len_mat = len(self.constraint_xi_xj)
 		res = np.dot(self.constraint_xi_xj, other.constraint_xi_xj)
 		for i in range(res.shape[0]) :
 			for j in range(res.shape[1]) :

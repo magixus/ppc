@@ -39,10 +39,8 @@ class reines(object):
 	def getq(self, number):
 		Q = set()  # get all constraint between variables
 		for i in range(number):
-			for j in range(number):
-				if j > i:
-					if not (self.mp[i, j] == np.ones((number, number), int)).all():
-						Q.add((i, j))
+			for j in range(i,number):
+				Q.add((i, j))
 		return Q
 
 

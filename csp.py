@@ -17,13 +17,15 @@ import basicFunctions as BF
 class CSP(object):
   """docstring for CSP"""
 
-  def __init__(self, x, d,c):
+  def __init__(self, x, d,c,q=None):
     self.x = X(x)  # number of variables
     self.d = D(d, x)  # range of domain definition
     self.domainXi = [set([p for p in range(d)]) for y in range(x)]
     if type(c) is 'int':
-      self.Mp = self.generateRandomConstraint(self.getQ(c))
-    else :
+      self.Q = self.getQ(c)
+      self.Mp = self.generateRandomConstraint(self.Q)
+    else : # le cas d'un prob de reine
+      self.Q = q
       self.Mp = c
 
 
@@ -44,7 +46,7 @@ class CSP(object):
   def getQ(self, n):
     return self.x.generateConstraints(n)
 
-  def updateconstraint(self, mat, xi, vi):
+  def updateConstraint(self, mat, xi, vi):
     var_pos = mat[xi]
     for xj in range(xi + 1, len(var_pos) - 1):
       vec = list(mat[xi, xj][vi])
@@ -56,13 +58,13 @@ class CSP(object):
       mat[xi, xj] = unchaged
       mat[xj, xi] = mat_t  # put transpose on mp(xj,xi)
 
-  def updatedomain(self,mat,domaine):
-    for i in range(self.x.Xi) :
+  def updateDomain(self,mat):
+    for i in range(len(mat[0])) :
       c = mat[i,i]
       for l in range(len(c)):
         if c[l,l] == 0 :
-          domaine.exists[i][l] = 0
-          self.domainXi[i].remove(l)
+          self.domainXi.remove(l)
+
 
 
   def is_consistant(self,mat):
@@ -72,14 +74,14 @@ class CSP(object):
         if np.sum(mat[i, j]) == 0: return False
     return True
 
-  def PC2(self,domaine, mat,Q):
-
+  def PC2(self, mat):
+    Q=self.Q.copy()
     while Q:  # while Q still has elements on it
+      print(sorted(Q))
       pair = Q.pop()
-      print(pair)
       i,j = pair[0],pair[1]
       for k in range(self.x.Xi):
-        if (not (k == i) and not (k == j)):
+        if ((k != i) and (k != j)):
           # green
           temp = C(mat[i, k]) & (C(mat[i, j]) * (C(mat[j, j]) * C(mat[j, k])))
           if not (C(temp) == C(mat[i, k])):
@@ -98,17 +100,12 @@ class CSP(object):
               Q.add((k, j))
             else:
               Q.add((j, k))
-    #BF.printt(mat)
-    self.updatedomain(mat,domaine)
+    self.updateDomain(mat)
 
-  ##except Exception as e:
-  ##	return "faill"
-
-  def look_ahead(self, Domaine, m, Q):  # perform random var's initiation
-    QQ = Q
-    self.PC2(Domaine,m,QQ)
+  def look_ahead(self, mat):  # perform random var's initiation
+    self.PC2(mat)
     print("passage ici--------")
-    if not self.is_consistant(m): print("inconsistant"); return False
+    if not self.is_consistant(mat): print("inconsistant"); return False
     if self.x.is_instanciate():
       print("tout est instantié")
       return True
@@ -119,25 +116,19 @@ class CSP(object):
 
       print(self.domainXi[xi])
 
-      for vi in Domaine.Di[xi]:
-        self.domainXi[xi]={vi}
-        dom = Domaine
-        dom.Di[xi] = {vi}
+      for vi in self.domainXi[xi]:
         self.x.instanciation[xi] = {vi}
-        m2 = m
-        BF.printt(m)
-        self.updateConstrait(dom,m2)
-        if self.look_ahead(dom, m2, Q): return True
+        m2 = mat.copy()
+        #BF.printt(m2)
+        #self.updateConstrait(m2)
+        self.Q.add((xi,xi))
+        if self.look_ahead(m2): return True
       return False
-
-  def updateConstrait(self, dom, mat):
+"""
+  def updateConstrait(self, mat):
     for i in range(self.x.Xi):
       for j in range(i+1,self.x.Xi):
-        domC = dom.getConstraintFromDomain(i,j)
-        """
-        print("----")
-        print(domC)
-        """
+        domC = self.domainXi.getConstraintFromDomain(i,j)
         mat[i,j] = mat[i,j] & domC
         domC = np.transpose(domC)
-        mat[j,i] = mat[j,i] & domC
+        mat[j,i] = mat[j,i] & domC"""
