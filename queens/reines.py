@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import numpy as np
-import random, sys, re
 
 
 class reines(object):
@@ -39,7 +38,7 @@ class reines(object):
 	def getq(self, number):
 		Q = set()  # get all constraint between variables
 		for i in range(number):
-			for j in range(i,number):
+			for j in range(i+1,number):
 				Q.add((i, j))
 		return Q
 

@@ -30,8 +30,7 @@ class C(object):
 	def __and__(self, other):
 		return self.constraint_xi_xj &  other.constraint_xi_xj
 
-	"""def __rand__(self, other):
-		return other & self.constraint_xi_xj"""
+
 
 	def __eq__(self, other):
 		n = self.constraint_xi_xj.shape

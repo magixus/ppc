@@ -1,13 +1,9 @@
 import sys
 import re
 import random
-import numpy as np
 from csp import CSP
 
 from queens.reines import reines as queen
-from contrainte import C 
-from domaine import D
-from variable import X 
 import basicFunctions as BF
 
 
@@ -22,18 +18,19 @@ if len(sys.argv) > 3:
 	D_rang = random.randrange(di[0],di[1])
 	C_rang = random.randrange(ci[0],ci[1])
 
-	print("random variables  = ",X_rang)
-	print("random domains    =  [ 0 .. ",D_rang,"]")
+	print("random variables  	=	",X_rang)
+	print("random domains    	=	[ 0 .. ",D_rang,"]")
+	print("random constraint	=	",C_rang )
 
 	csp = CSP(X_rang,D_rang,C_rang)
-	Q = csp.getQ(C_rang)
-	print(Q)
-	Mp = csp.Mp
-	print(Mp)
-	#BF.printcolor(Mp)
-	dom = csp.d.Di
-	print(csp.look_ahead(Mp))
-	print(csp.x.instanciation)
+	print("constraints are	=	",csp.Q)
+	Mp = csp.Mp.copy()
+
+	if csp.look_ahead(Mp):
+		print("Solution found !")
+		print(csp.x.instanciation)
+	else:
+		print("No solution found !")
 
 
 
@@ -43,13 +40,15 @@ elif len(sys.argv) == 2:
 	#BF.printt(Queen.mp)
 	Q = Queen.getq(queenNubmer)
 	csp = CSP(queenNubmer,queenNubmer,Queen.mp,Q)
-	mp = csp.Mp
+	mp = csp.Mp.copy()
 	#BF.printt(mp)
 
-	print(sorted(Q))
+	#csp.PC2(mp)
+
+	#BF.printt(mp)
 
 	print(csp.look_ahead(mp))
-	#print(csp.x.instanciation)
+	print(csp.x.instanciation)
 
 else :
 	print("\n\tusage \t: python solver.py [Var range] [dom range] [con range]\n")
