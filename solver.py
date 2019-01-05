@@ -2,9 +2,9 @@ import sys
 import re
 import random
 from csp import CSP
+import time
 
 from queens.reines import reines as queen
-import basicFunctions as BF
 
 
 if len(sys.argv) > 3:
@@ -26,8 +26,9 @@ if len(sys.argv) > 3:
 	print("constraints are	=	",csp.Q)
 	Mp = csp.Mp.copy()
 
+	t= time.time()
 	if csp.look_ahead(Mp):
-		print("Solution found !")
+		print("Solution found in :", time.time()-t, " s")
 		print(csp.x.instanciation)
 	else:
 		print("No solution found !")
@@ -38,17 +39,18 @@ elif len(sys.argv) == 2:
 	queenNubmer = int(sys.argv[1])
 	Queen = queen(queenNubmer)
 	#BF.printt(Queen.mp)
-	Q = Queen.getq(queenNubmer)
-	csp = CSP(queenNubmer,queenNubmer,Queen.mp,Q)
+	csp = CSP(queenNubmer,queenNubmer,Queen.mp, Queen.Q)
 	mp = csp.Mp.copy()
-	#BF.printt(mp)
 
-	#csp.PC2(mp)
+	print("Queens number		=	", queenNubmer)
+	print("Queens domains		=	[ 0 .. ", queenNubmer, "]")
 
-	#BF.printt(mp)
-
-	print(csp.look_ahead(mp))
-	print(csp.x.instanciation)
+	t = time.time()
+	if (csp.look_ahead(mp)):
+		print("Solution found in  :", time.time()-t," s")
+		print(csp.x.instanciation)
+	else :
+		print("no solution found")
 
 else :
 	print("\n\tusage \t: python solver.py [Var range] [dom range] [con range]\n")
